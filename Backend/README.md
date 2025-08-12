@@ -98,10 +98,3 @@ The request body must be sent in **JSON** format:
 * A JWT authentication token is returned upon successful registration.
 
 ```
-
----
-
-If you want, I can also **add an `/auth/login` section** in the same README so your authentication docs are in one place. That way your backend docs are ready for team or API testing use.  
-
-Do you want me to add that next?
-```
