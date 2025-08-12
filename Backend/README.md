@@ -1,8 +1,3 @@
-Got it — I’ll extend your **backend/README.md** to include the `/users/login` endpoint right after `/users/register`, keeping the same style and clarity.
-
-Here’s the updated documentation:
-
----
 
 **backend/README.md**
 
@@ -164,3 +159,5 @@ Authenticates an existing user and returns a JWT token.
 * Both endpoints use **express-validator** for request validation.
 * Passwords are stored hashed using bcrypt.
 * JWT tokens are signed using `process.env.JWT_SECRET`.
+
+```
