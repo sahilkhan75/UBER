@@ -1,7 +1,3 @@
-
-**backend/README.md**
-
-````markdown
 # User API Documentation
 
 ## 1. Register User
@@ -154,10 +150,94 @@ Authenticates an existing user and returns a JWT token.
 
 ---
 
+## 3. Get User Profile
+
+`GET /users/profile`
+
+Returns the authenticated user's profile information.
+
+**Authentication Required** — Must include a valid JWT token in either:
+
+* `Authorization` header as `Bearer <token>`, or
+* `token` cookie
+
+---
+
+### Headers Example
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
+```
+
+### Responses
+
+#### **200 OK**
+
+```json
+{
+  "_id": "64f1234abc5678",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john@example.com"
+}
+```
+
+#### **401 Unauthorized**
+
+```json
+{
+  "message": "Access denied. No token provided."
+}
+```
+
+---
+
+## 4. Logout User
+
+`GET /users/logout`
+
+Logs out the authenticated user by:
+
+* Clearing the `token` cookie
+* Adding the token to a blacklist so it can't be reused
+
+**Authentication Required**
+
+---
+
+### Headers Example
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
+```
+
+### Responses
+
+#### **200 OK**
+
+```json
+{
+  "message": "User logged out successfully"
+}
+```
+
+#### **401 Unauthorized**
+
+```json
+{
+  "message": "Access denied. No token provided."
+}
+```
+
+---
+
 ## Notes
 
-* Both endpoints use **express-validator** for request validation.
+* All endpoints use **express-validator** for request validation.
 * Passwords are stored hashed using bcrypt.
 * JWT tokens are signed using `process.env.JWT_SECRET`.
+* The `/users/profile` and `/users/logout` routes are protected by `authMiddleware`.
 
 ```
