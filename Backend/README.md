@@ -1,4 +1,4 @@
-# User API Documentation
+# API Documentation
 
 ## 1. Register User
 `POST /users/register`
@@ -139,34 +139,20 @@ Authenticates an existing user and returns a JWT token.
 }
 ```
 
-#### **500 Internal Server Error**
-
-```json
-{
-  "message": "Internal Server Error",
-  "error": "Detailed error message"
-}
-```
-
 ---
 
 ## 3. Get User Profile
 
 `GET /users/profile`
 
-Returns the authenticated user's profile information.
+Fetches the currently authenticated user's profile.
 
-**Authentication Required** — Must include a valid JWT token in either:
+### Authentication
 
-* `Authorization` header as `Bearer <token>`, or
-* `token` cookie
-
----
-
-### Headers Example
+Requires a valid JWT token in **Authorization** header:
 
 ```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
+Authorization: Bearer <token>
 ```
 
 ### Responses
@@ -188,7 +174,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
 
 ```json
 {
-  "message": "Access denied. No token provided."
+  "message": "Authentication required"
 }
 ```
 
@@ -198,20 +184,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
 
 `GET /users/logout`
 
-Logs out the authenticated user by:
+Logs out the authenticated user by blacklisting the current token.
 
-* Clearing the `token` cookie
-* Adding the token to a blacklist so it can't be reused
+### Authentication
 
-**Authentication Required**
-
----
-
-### Headers Example
-
-```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
-```
+Requires a valid JWT token.
 
 ### Responses
 
@@ -223,11 +200,91 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
 }
 ```
 
-#### **401 Unauthorized**
+---
+
+## 5. Register Captain
+
+`POST /captains/register`
+
+Registers a new captain with vehicle details.
+
+---
+
+### Request Body
 
 ```json
 {
-  "message": "Access denied. No token provided."
+  "fullname": {
+    "firstname": "Mike",
+    "lastname": "Smith"
+  },
+  "email": "mike@example.com",
+  "password": "securePassword123",
+  "vechile": {
+    "color": "Red",
+    "plate": "AB123CD",
+    "capacity": 4,
+    "vechileType": "car"
+  }
+}
+```
+
+### Field Requirements:
+
+| Field                 | Type   | Required | Validation Rules                            |
+| --------------------- | ------ | -------- | ------------------------------------------- |
+| `fullname.firstname`  | string | Yes      | Minimum 3 characters                        |
+| `fullname.lastname`   | string | No       | Minimum 3 characters (if provided)          |
+| `email`               | string | Yes      | Must be a valid email address               |
+| `password`            | string | Yes      | Minimum 6 characters                        |
+| `vechile.color`       | string | Yes      | Minimum 3 characters                        |
+| `vechile.plate`       | string | Yes      | Minimum 3 characters                        |
+| `vechile.capacity`    | number | Yes      | Must be at least 1                          |
+| `vechile.vechileType` | string | Yes      | Must be one of: `car`, `motorcycle`, `auto` |
+
+---
+
+### Responses
+
+#### **201 Created**
+
+```json
+{
+  "_id": "64f9876abc4321",
+  "fullname": {
+    "firstname": "Mike",
+    "lastname": "Smith"
+  },
+  "email": "mike@example.com",
+  "vechile": {
+    "color": "Red",
+    "plate": "AB123CD",
+    "capacity": 4,
+    "vechileType": "car"
+  }
+}
+```
+
+#### **400 Bad Request**
+
+```json
+{
+  "errors": [
+    {
+      "msg": "color must be at least 3 characters long",
+      "param": "vechile.color",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### **500 Internal Server Error**
+
+```json
+{
+  "message": "Internal Server Error",
+  "error": "Detailed error message"
 }
 ```
 
@@ -235,9 +292,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI...
 
 ## Notes
 
-* All endpoints use **express-validator** for request validation.
+* All endpoints use **express-validator** for input validation.
 * Passwords are stored hashed using bcrypt.
 * JWT tokens are signed using `process.env.JWT_SECRET`.
-* The `/users/profile` and `/users/logout` routes are protected by `authMiddleware`.
+* Logout uses a **blacklist token** approach to invalidate the current session.
 
-```
