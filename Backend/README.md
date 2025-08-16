@@ -290,6 +290,147 @@ Registers a new captain with vehicle details.
 
 ---
 
+## 6. Login Captain
+
+`POST /captains/login`
+
+Authenticates an existing captain and returns a JWT token.
+
+---
+
+### Request Body
+
+```json
+{
+  "email": "mike@example.com",
+  "password": "securePassword123"
+}
+```
+
+### Field Requirements:
+
+| Field      | Type   | Required | Validation Rules              |
+| ---------- | ------ | -------- | ----------------------------- |
+| `email`    | string | Yes      | Must be a valid email address |
+| `password` | string | Yes      | Minimum 6 characters          |
+
+---
+
+### Responses
+
+#### **200 OK**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI...",
+  "captain": {
+    "_id": "64f9876abc4321",
+    "fullname": {
+      "firstname": "Mike",
+      "lastname": "Smith"
+    },
+    "email": "mike@example.com",
+    "vechile": {
+      "color": "Red",
+      "plate": "AB123CD",
+      "capacity": 4,
+      "vechileType": "car"
+    }
+  }
+}
+```
+
+#### **400 Bad Request**
+
+```json
+{
+  "errors": [
+    {
+      "msg": "invalid email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### **401 Unauthorized**
+
+```json
+{
+  "message": "invalid email or password"
+}
+```
+
+---
+
+## 7. Get Captain Profile
+
+`GET /captains/profile`
+
+Fetches the currently authenticated captain's profile.
+
+### Authentication
+
+Requires a valid JWT token:
+
+```
+Authorization: Bearer <token>
+```
+
+### Responses
+
+#### **200 OK**
+
+```json
+{
+  "_id": "64f9876abc4321",
+  "fullname": {
+    "firstname": "Mike",
+    "lastname": "Smith"
+  },
+  "email": "mike@example.com",
+  "vechile": {
+    "color": "Red",
+    "plate": "AB123CD",
+    "capacity": 4,
+    "vechileType": "car"
+  }
+}
+```
+
+#### **401 Unauthorized**
+
+```json
+{
+  "message": "Authentication required"
+}
+```
+
+---
+
+## 8. Logout Captain
+
+`GET /captains/logout`
+
+Logs out the authenticated captain by blacklisting the current token.
+
+### Authentication
+
+Requires a valid JWT token.
+
+### Responses
+
+#### **200 OK**
+
+```json
+{
+  "message": "Captain logged out successfully"
+}
+```
+
+---
+
 ## Notes
 
 * All endpoints use **express-validator** for input validation.
