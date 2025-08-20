@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { CaptainDataContext } from '../context/CaptainContext'
+import axios from 'axios'
 
 export default function CaptainSignup() {
 
@@ -8,17 +10,44 @@ export default function CaptainSignup() {
   const [firstname, setfirstname] = useState('')
   const [lastname, setlastname] = useState('')
   const [userdata, setuserdata] = useState({})
+  const { captain, setCaptain } = useContext(CaptainDataContext)
 
-  const submithandler = (e) => {
+
+  const [vechilecolor, setVechilecolor] = useState('');
+  const [vechiletype, setVechiletype] = useState('');
+  const [vechilecapacity, setVechilecapacity] = useState('');
+  const [vechileplate, setVechileplate] = useState('');
+
+  const navigate = useNavigate()
+
+
+  const submithandler = async (e) => {
     e.preventDefault()
-    setuserdata({
+    const captaindata = {
       fullname: {
         firstname: firstname,
         lastname: lastname
       },
       email: email,
-      password: password
-    })
+      password: password,
+
+      vechile: {
+        color: vechilecolor,
+        capacity: vechilecapacity,
+        plate: vechileplate,
+        vechileType: vechiletype
+      }
+
+    }
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captaindata)
+
+    if (response.status === 201) {
+      const data = response.data
+      setCaptain(data.captain)
+      localStorage.setItem('token', data.token)
+      navigate('/captain-home')
+    }
 
 
 
@@ -27,6 +56,10 @@ export default function CaptainSignup() {
     setlastname('')
     setemail('')
     setpassword('')
+    setVechilecapacity('')
+    setVechilecolor('')
+    setVechileplate('')
+    setVechiletype('')
   }
 
 
@@ -36,7 +69,7 @@ export default function CaptainSignup() {
       <div className='p-7 flex flex-col justify-between h-screen'>
         <div>
           <img className='w-20' src="https://ih1.redbubble.net/image.5007880594.5940/st,small,507x507-pad,600x600,f8f8f8.jpg" alt="" />
-          <form onSubmit={(e) => submithandler(e)} className='flex flex-col mt-5'>
+          <form onSubmit={(e) => submithandler(e)} className='flex flex-col '>
 
             <h3 className='text-xl w-full font-medium mb-2 '>what's our captain Name</h3>
             <div className='flex  gap-2 '>
@@ -85,9 +118,53 @@ export default function CaptainSignup() {
               }}
             />
 
+
+            <h3 className='text-xl font-medium mb-2'>Vehicle Information</h3>
+            <div className='flex flex-col gap-3 mb-6'>
+              <div className='flex gap-3'>
+                <input
+                  required
+                  className='bg-[#eeeeee] rounded px-4 py-2 border w-full text-lg placeholder:text-base'
+                  type="text"
+                  placeholder='Vehicle Color'
+                  value={vechilecolor}
+                  onChange={(e) => setVechilecolor(e.target.value)}
+                />
+                <select
+                  required
+                  className='bg-[#eeeeee] rounded px-4 py-2 border w-full text-lg'
+                  value={vechiletype}
+                  onChange={(e) => setVechiletype(e.target.value)}
+                >
+                  <option value="" disabled>Select Vehicle Type</option>
+                  <option value="car">Car</option>
+                  <option value="auto">Auto</option>
+                  <option value="moto">Moto</option>
+                </select>
+              </div>
+              <input
+                required
+                className='bg-[#eeeeee] rounded px-4 py-2 border w-full text-lg placeholder:text-base'
+                type="number"
+                min="1"
+                placeholder='Vehicle Capacity'
+                value={vechilecapacity}
+                onChange={(e) => setVechilecapacity(e.target.value)}
+              />
+              <input
+                required
+                className='bg-[#eeeeee] rounded px-2 py-2 border w-full text-lg placeholder:text-base'
+                type="text"
+                placeholder='Vehicle Plate Number'
+                value={vechileplate}
+                onChange={(e) => setVechileplate(e.target.value)}
+              />
+            </div>
+
+
             <button
-              className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-sm'
-            >Login
+              className='bg-[#111] text-white font-semibold mb-3 rounded px-2 py-2  w-full text-lg placeholder:text-sm'
+            >Create Captain account
             </button>
           </form>
           <p className='text-center font-semibold'>Allready have a account <Link to="/captain-login" className='text-blue-600 font-normal'>Login here</Link></p>
