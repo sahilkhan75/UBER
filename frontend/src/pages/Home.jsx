@@ -2,6 +2,11 @@ import React, { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import 'remixicon/fonts/remixicon.css'
+import LocationSearchPanel from '../component/LocationSearchPanel'
+import Vechilepanel from '../component/Vechilepanel'
+import ConfirmRide from '../component/ConfirmRide'
+import LookingforDriver from '../component/LookingforDriver'
+import WaitingforDriver from '../component/WaitingforDriver'
 
 export default function Home() {
 
@@ -9,8 +14,15 @@ export default function Home() {
     const [destination, setdestination] = useState('')
     const [panelopen, setpanelopen] = useState(false)
     const panelRef = useRef(null)
+    const vechilePanelRef = useRef(null)
+    const confirmRidePanelRef = useRef(null)
     const panelcloseRef = useRef(null)
-
+    const vechilefoundref = useRef(null)
+    const WaitingforDriverRef = useRef(null)
+    const [vechilePanel, setvechilePanel] = useState(false)
+    const [confirmRidepanel, setconfirmRidepanel] = useState(false)
+    const [vechilefound, setvechilefound] = useState(false)
+    const [waitingforDriver, setwaitingforDriver] = useState(false)
 
     const submithandler = () => {
         e.preventDefault()
@@ -19,14 +31,16 @@ export default function Home() {
     useGSAP(function () {
         if (panelopen) {
             gsap.to(panelRef.current, {
-                height: '70%'
+                height: '70%',
+                padding: 20
             })
             gsap.to(panelcloseRef.current, {
                 opacity: 1
             })
         } else {
             gsap.to(panelRef.current, {
-                height: '0%'
+                height: '0%',
+                padding: 0
             })
             gsap.to(panelcloseRef.current, {
                 opacity: 0
@@ -36,11 +50,63 @@ export default function Home() {
 
     }, [panelopen])
 
+    useGSAP(function () {
+        if (vechilePanel) {
+            gsap.to(vechilePanelRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(vechilePanelRef.current, {
+                transform: 'translateY(100%)'
+            })
+        }
+    }, [vechilePanel])
+
+
+    useGSAP(function () {
+        if (confirmRidepanel) {
+            gsap.to(confirmRidePanelRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(confirmRidePanelRef.current, {
+                transform: 'translateY(100% )'
+            })
+        }
+    }, [confirmRidepanel])
+
+
+
+    useGSAP(function () {
+        if (vechilefound) {
+            gsap.to(vechilefoundref.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(vechilefoundref.current, {
+                transform: 'translateY(100% )'
+            })
+        }
+    }, [vechilefound])
+
+
+
+    useGSAP(function () {
+        if (waitingforDriver) {
+            gsap.to(WaitingforDriverRef.current, {
+                transform: 'translateY(0)'
+            })
+        } else {
+            gsap.to(WaitingforDriverRef.current, {
+                transform: 'translateY(100% )'
+            })
+        }
+    }, [waitingforDriver])
 
 
 
     return (
-        <div className='h-screen relative'>
+        <div className='h-screen relative overflow-hidden'>
             <img className='w-16 absolute left-5 top-5' src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png" alt="" />
 
             <div className='h-screen w-screen'>
@@ -85,9 +151,26 @@ export default function Home() {
                         />
                     </form>
                 </div>
-                <div ref={panelRef} className=' bg-red-500 h-0' >
-
+                <div ref={panelRef} className=' bg-white h-0' >
+                    <LocationSearchPanel setpanelopen={setpanelopen} setvechilePanel={setvechilePanel} />
                 </div>
+            </div>
+
+            <div ref={vechilePanelRef} className='fixed w-full  z-10 bg-white bottom-0 px-3 py-10 pt-12 translate-y-full'>
+                <Vechilepanel setvechilePanel={setvechilePanel} setconfirmRidepanel={setconfirmRidepanel} />
+            </div>
+
+
+            <div ref={confirmRidePanelRef} className='fixed w-full  z-10 bg-white bottom-0 px-3 py-6 pt-6 translate-y-full'>
+                <ConfirmRide setconfirmRidepanel={setconfirmRidepanel} setvechilefound={setvechilefound} />
+            </div>
+
+            <div ref={vechilefoundref} className='fixed w-full  z-10 bg-white bottom-0 px-3 py-6 pt-6 translate-y-full'>
+                <LookingforDriver setvechilefound={setvechilefound} />
+            </div>
+
+            <div ref={WaitingforDriverRef} className='fixed w-full  z-10 bg-white bottom-0 px-3 py-6 pt-6 translate-y-full'>
+                <WaitingforDriver setwaitingforDriver={setwaitingforDriver} />
             </div>
 
         </div>
